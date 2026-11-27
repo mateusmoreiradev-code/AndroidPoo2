@@ -27,8 +27,23 @@ public class ApiClient {
     public void listarProdutos(Sucesso<List<Produto>> sucesso, Falha falha){
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, BASE_URL + "/api/produtos", null, resposta -> sucesso.executar(converterLista(resposta)), erro -> falha.executar(mensagemErro(erro)));
         fila.add(request);
-    };
-
+    }
+    public void buscarProduto(Long id, Sucesso<Produto> sucesso, Falha falha){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, BASE_URL + "/api/produtos/", null, resposta -> sucesso.executar(converterProduto(resposta)), erro -> falha.executar(mensagemErro(erro)));
+        fila.add(request);
+    }
+    public void criarProduto(Produto produto, Sucesso<Produto> sucesso, Falha falha){
+      JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, BASE_URL + "/api/produtos/", converterJson(produto), resposta -> sucesso.executar(converterProduto(resposta)), erro -> falha.executar(mensagemErro(erro)));
+      fila.add(request);
+    }
+    public void atualizarProduto(Produto produto, Sucesso<Produto> sucesso, Falha falha){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, BASE_URL + "/api/produtos/"+ produto.getId("id"), converterJson(produto), resposta -> sucesso.executar(converterProduto(resposta)), erro -> falha.executar(mensagemErro(erro)));
+        fila.add(request);
+    }
+    public void excluirProduto(long id, Sucesso<void> sucesso, Falha falha){
+        StringRequest request = new StringRequest(Request.Method.DELETE, BASE_URL + "/api/produtos/" + id, resposta -> sucesso.executar(null), erro -> falha.executar(mensagemErro(erro)));
+        fila.add(request);
+    }
     private List<Produto> converterLista(JSONArray array){
         List<Produto> produtos = new ArrayList<>();
         for(int i = 0; i < array.length(); i++){
